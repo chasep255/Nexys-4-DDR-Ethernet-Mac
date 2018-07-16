@@ -17,20 +17,20 @@ module eth_mac
 	output [1:0]  eth_txd,
 	output        eth_clkin,
 	inout         eth_intn,
-    
-    output        rx_vld,
-    output [7:0]  rx_dat,
-    output        rx_sof,
-    output        rx_eof,
-    output [10:0] rx_len,
-    output        rx_err,
-    
-    input         tx_vld,
-    input [7:0]   tx_dat,
-    input         tx_sof,
-    input         tx_eof,
-    input         tx_err,
-    output        tx_ack
+	
+	output        rx_vld,
+	output [7:0]  rx_dat,
+	output        rx_sof,
+	output        rx_eof,
+	output [10:0] rx_len,
+	output        rx_err,
+	
+	input         tx_vld,
+	input [7:0]   tx_dat,
+	input         tx_sof,
+	input         tx_eof,
+	input         tx_err,
+	output        tx_ack
 );
 	assign eth_crsdv = 1'bz;
 	assign eth_rxerr = 1'bz;
@@ -62,8 +62,8 @@ module eth_mac
 		.rx_dat   (rx_dat),
 		.rx_sof   (rx_sof),
 		.rx_eof   (rx_eof),
-        .rx_err   (rx_err),
-        .rx_len   (rx_len)
+		.rx_err   (rx_err),
+		.rx_len   (rx_len)
 	);
 	
 	

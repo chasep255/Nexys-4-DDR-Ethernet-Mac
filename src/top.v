@@ -94,5 +94,5 @@ module top
 		.eth_intn (eth_intn)
 	);
 	
-    
+	
 endmodule

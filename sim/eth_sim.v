@@ -2,18 +2,18 @@
 
 module eth_sim
 (   
-    input         eth_mdc,
-    inout         eth_mdio,
-    input         eth_rstn,
-    output        eth_crsdv,
-    output        eth_rxerr,
-    output [1:0]  eth_rxd,
-    input         eth_txen,
-    input  [1:0]  eth_txd,
-    input         eth_clkin,
-    output        eth_intn
+	input         eth_mdc,
+	inout         eth_mdio,
+	input         eth_rstn,
+	output        eth_crsdv,
+	output        eth_rxerr,
+	output [1:0]  eth_rxd,
+	input         eth_txen,
+	input  [1:0]  eth_txd,
+	input         eth_clkin,
+	output        eth_intn
 );
-    
+	
 	rx_sim rx_sim_inst
 	(   
 		.eth_clkin(eth_clkin),
@@ -22,5 +22,5 @@ module eth_sim
 		.eth_rxerr(eth_rxerr),
 		.eth_rxd  (eth_rxd)
 	);
-    
+	
 endmodule
