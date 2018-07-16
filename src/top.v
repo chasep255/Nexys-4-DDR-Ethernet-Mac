@@ -91,13 +91,7 @@ module top
 		.eth_txen (eth_txen),
 		.eth_txd  (eth_txd),
 		.eth_clkin(eth_clkin),
-		.eth_intn (eth_intn),
-		
-		.sw       (sw),
-		.led      (led),
-		.btnc     (btnc_d),
-		.btnu     (btnu_d),
-		.btnd     (btnd_d)
+		.eth_intn (eth_intn)
 	);
 	
     

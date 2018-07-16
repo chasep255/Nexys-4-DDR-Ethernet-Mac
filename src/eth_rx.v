@@ -17,27 +17,14 @@ module eth_rx
 	output reg        rx_err
 );
 	
-	function [31:0] bswap32;
-		input [31:0] x;
-		begin
-			bswap32 = {x[7:0], x[15:8], x[23:16], x[31:24]};
-		end
-	endfunction
+	`include "util.vh"
 
-	reg [63:0] data_buffer;
-	reg [63:0] next_data_buffer;
+	reg [63:0] data_buffer, next_data_buffer;
 	always @(posedge clk_mac) begin
 		if(rst_n)
 			data_buffer <= next_data_buffer;
 		else
 			data_buffer <= 0;
-	end
-	
-	reg [1:0] rxd_b;
-	reg       crs_b;
-	always @(posedge clk_mac) begin
-		rxd_b <= eth_rxd;
-		crs_b <= eth_crsdv;
 	end
 	
     reg [10:0] frame_idx, next_frame_idx;
@@ -79,7 +66,7 @@ module eth_rx
 	(
 		.clk (clk_mac),
 		.rst (next_rx_sof && next_rx_vld),
-		.vld (next_rx_vld),
+		.vld (next_rx_vld && !next_rx_eof),
 		.data(next_rx_dat),
 		.crc (crc32_code)
 	);

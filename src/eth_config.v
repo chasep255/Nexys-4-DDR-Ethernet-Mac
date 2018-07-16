@@ -16,7 +16,7 @@ module eth_config
 	reg  [15:0] smi_write_val;
 	wire [15:0] smi_read_val;
 	wire        smi_ready;
-	smi smi_inst
+	eth_smi eth_smi_inst
 	( 
 		.clk_mac    (clk_mac),
 		.rst_n      (rst_n),
@@ -45,38 +45,13 @@ module eth_config
 			state <= STATE_RST;
 	end
 		
-	reg [15:0] next_led;
-	always @(posedge clk_mac)
-		led <= next_led; 
-		
 	always @* begin
 		next_state    = state;
 		smi_vld       = 0;
 		smi_reg       = 0;
 		smi_write     = 0;
 		smi_write_val = 0;
-		next_led      = led;
 		
-		case(state)
-			STATE_RST: begin
-				next_state = STATE_MONITOR;
-			end STATE_MONITOR: begin
-				if(btnc) begin
-					if(smi_ready) begin
-						next_state = STATE_READ;
-						smi_vld = 1;
-						smi_reg = sw;
-					end
-				end else if(btnd) begin
-					next_state = STATE_ENABLE_LOOPBACK;
-				end
-			end STATE_READ: begin
-				if(smi_ready) begin
-					next_state = STATE_MONITOR;
-					next_led   = smi_read_val;
-				end
-			end
-		endcase
 	end
 
 endmodule
