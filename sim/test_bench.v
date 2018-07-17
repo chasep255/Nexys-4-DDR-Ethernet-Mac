@@ -39,7 +39,7 @@ module test_bench();
 		@(posedge top.eth_rstn);
 		
 		for(i = 0; i < 100; i = i + 1)
-			@(posedge top.clk_eth);
+			@(posedge top.clk_mac);
 		
 		eth_sim_inst.rx_sim_inst.send({112'hebeb000000ffffff}, 14);
 		

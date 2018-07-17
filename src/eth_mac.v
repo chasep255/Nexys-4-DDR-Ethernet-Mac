@@ -4,7 +4,6 @@
 module eth_mac
 (
 	input         clk_mac,
-	input         clk_eth,
 	input         rst_n,
 	
 	output        eth_mdc,
@@ -37,7 +36,7 @@ module eth_mac
 	assign eth_rxd   = 2'bzz;
 	assign eth_intn  = 1'bz;
 	assign eth_rstn  = rst_n;
-	assign eth_clkin = clk_eth;
+	assign eth_clkin = clk_mac;
 	
 	eth_config eth_config_inst
 	(
