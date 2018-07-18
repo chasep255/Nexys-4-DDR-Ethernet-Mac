@@ -13,7 +13,6 @@ module eth_sim
 	input         eth_clkin,
 	output        eth_intn
 );
-	
 	rx_sim rx_sim_inst
 	(   
 		.eth_clkin(eth_clkin),
@@ -21,6 +20,14 @@ module eth_sim
 		.eth_crsdv(eth_crsdv),
 		.eth_rxerr(eth_rxerr),
 		.eth_rxd  (eth_rxd)
+	);
+	
+	tx_sim tx_sim_inst
+	(   
+		.eth_rstn (eth_rstn),
+		.eth_clkin(eth_clkin),
+		.eth_txen (eth_txen),
+		.eth_txd  (eth_txd)
 	);
 	
 endmodule

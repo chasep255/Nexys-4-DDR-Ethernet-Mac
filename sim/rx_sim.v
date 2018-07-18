@@ -55,7 +55,7 @@ module rx_sim
 			
 			
 			if(verbose)
-				$display("RX Start of Frame");
+				$display("RX SOF");
 			for(i = 0; i < (8 * 4 - 1); i = i + 1) begin
 				@(posedge eth_clkin); #0.001;
 				eth_rxd = 2'b01;
@@ -65,7 +65,7 @@ module rx_sim
 				eth_rxd = 2'b11;
 			
 			if(verbose)
-				$display("RX Start of Data");
+				$display("RX SOD");
 			
 			crc_rst = 0;
 			for(i = 0; i < 8 * len; i = i + 2) begin
@@ -75,7 +75,7 @@ module rx_sim
 					crc_vld = 1;
 					crc_dat = data[i +: 8];
 					if(verbose)
-						$display("RX Sent Data[%d] %02h", i / 8, data[i +: 8]);
+						$display("RX SENT DATA[%d] %02h", i / 8, data[i +: 8]);
 				end else
 					crc_vld = 0;
 			end
@@ -87,7 +87,7 @@ module rx_sim
 					crc_vld = 1;
 					crc_dat = 0;
 					if(verbose)
-						$display("RX Sent Pad");
+						$display("RX SENT PAD");
 				end else
 					crc_vld = 0;
 				i = i + 2;
@@ -101,14 +101,14 @@ module rx_sim
 			end
 			
 			if(verbose)
-				$display("RX Sent CRC32 %08h", crc_code);
+				$display("RX SENT CRC32 %08h", crc_code);
 			
 			@(posedge eth_clkin); #0.001;
 			eth_crsdv = 0;
 			eth_rxd   = 0;
 			
 			if(verbose)
-				$display("RX End of Frame");
+				$display("RX EOF");
 		end
 	endtask
 	

@@ -15,10 +15,13 @@ module test_bench();
 		rst_n = 1;
 	end
 	
+	
+	reg btnu = 0;
 	top top_inst
 	(
 		.clk_100  (clk_100),
-		.cpu_rst_n(rst_n)
+		.cpu_rst_n(rst_n),
+		.btnu     (btnu)
 	);
 	
 	eth_sim eth_sim_inst
@@ -35,6 +38,9 @@ module test_bench();
 		.eth_intn (top.eth_intn)
 	);
 	
+	reg [1522 * 8 - 1 : 0] data;
+	reg [10:0]             len;
+	reg                    err;
 	initial begin
 		@(posedge top.eth_rstn);
 		
@@ -42,6 +48,11 @@ module test_bench();
 			@(posedge top.clk_mac);
 		
 		eth_sim_inst.rx_sim_inst.send({112'hebeb000000ffffff}, 14);
+		
+		btnu = 1;
+		
+		eth_sim_inst.tx_sim_inst.recv(data, len, err);
+		$display("%h", data);
 		
 	end
 	
