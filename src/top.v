@@ -23,17 +23,21 @@ module top
 );
 	
 	wire clk_mac;
+	wire clk_phy;
 	wire clk_fb;
 	wire pll_locked;
 	PLLE2_BASE#
 	(
 		.CLKFBOUT_MULT (10),
 		.CLKOUT0_DIVIDE(20),
+		.CLKOUT1_DIVIDE(20),
+		.CLKOUT1_PHASE (45.0),
 		.CLKIN1_PERIOD (10.0)
 	)
 	clk_gen 
 	(
 		.CLKOUT0 (clk_mac),
+		.CLKOUT1 (clk_phy),
 		.CLKFBOUT(clk_fb),
 		.LOCKED  (pll_locked),
 		.CLKIN1  (clk_100),
@@ -87,6 +91,7 @@ module top
 	eth_mac mac_inst
 	(
 		.clk_mac  (clk_mac),
+		.clk_phy  (clk_phy),
 		.rst_n    (rst_n),
 	
 		.eth_mdc  (eth_mdc),
