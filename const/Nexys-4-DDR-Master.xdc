@@ -7,6 +7,9 @@
 set_property -dict {PACKAGE_PIN E3 IOSTANDARD LVCMOS33} [get_ports clk_100]
 create_clock -period 10.000 -name sys_clk_pin -waveform {0.000 5.000} -add [get_ports clk_100]
 
+set_input_delay -clock clk_mac 5.000 [get_ports {eth_crsdv eth_rxd eth_rxerr}]
+set_output_delay -clock clk_mac 5.000 [get_ports {eth_txd eth_txen}]
+
 
 ##Switches
 
@@ -79,6 +82,3 @@ set_property -dict {PACKAGE_PIN A10 IOSTANDARD LVCMOS33} [get_ports {eth_txd[0]}
 set_property -dict {PACKAGE_PIN A8 IOSTANDARD LVCMOS33} [get_ports {eth_txd[1]}]
 set_property -dict {PACKAGE_PIN D5 IOSTANDARD LVCMOS33} [get_ports eth_clkin]
 set_property -dict {PACKAGE_PIN B8 IOSTANDARD LVCMOS33} [get_ports eth_intn]
-
-set_input_delay -clock clk_mac 5.000 [get_ports {eth_crsdv eth_rxd eth_rxerr}]
-set_output_delay -clock clk_mac 5.000 [get_ports {eth_txd eth_txen}]
