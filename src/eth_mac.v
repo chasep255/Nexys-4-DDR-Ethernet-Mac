@@ -33,7 +33,20 @@ module eth_mac#
 	input         tx_sof,
 	input         tx_eof,
 	input         tx_err,
-	output        tx_ack
+	output        tx_ack,
+	
+	input         reg_vld,
+	input  [4:0]  reg_addr,
+	input         reg_write,
+	input  [15:0] reg_wval,
+	output [15:0] reg_rval,
+	output        reg_ack,
+	
+	output        speed_100,
+	output        full_duplex,
+	output        link_up,
+	output        remote_fault,
+	output        auto_neg_done
 );
 
 	assign eth_rstn  = rst_n;
@@ -87,14 +100,28 @@ module eth_mac#
 		.T (rstn_d)
 	);
 	
+
 	eth_config eth_config_inst
 	(
-		.clk_mac (clk_mac),
-		.rst_n   (rst_n),
+		.clk_mac      (clk_mac),
+		.rst_n        (rst_n),
 		
-		.eth_intn(eth_intn),
-		.eth_mdc (eth_mdc),
-		.eth_mdio(eth_mdio)
+		.eth_intn     (eth_intn),
+		.eth_mdc      (eth_mdc),
+		.eth_mdio     (eth_mdio),
+		
+		.reg_vld      (reg_vld),
+		.reg_addr     (reg_addr),
+		.reg_write    (reg_write),
+		.reg_wval     (reg_wval),
+		.reg_rval     (reg_rval),
+		.reg_ack      (reg_ack),
+		
+		.speed_100    (speed_100),
+		.full_duplex  (full_duplex),
+		.link_up      (link_up),
+		.remote_fault (remote_fault),
+		.auto_neg_done(auto_neg_done)
 	);
 	
 	eth_rx eth_rx_inst
@@ -113,7 +140,6 @@ module eth_mac#
 		.rx_err   (rx_err),
 		.rx_len   (rx_len)
 	);
-	
 	
 	eth_tx eth_tx_inst
 	(

@@ -4,7 +4,7 @@
 module test_bench();
 
 	reg clk_100 = 0;
-	reg clk_50 = 0;
+	reg clk_50  = 0;
 	always #5 clk_100 <= ~clk_100;
 	
 	integer i;
@@ -17,11 +17,14 @@ module test_bench();
 	
 	
 	reg btnu = 0;
+	reg btnd = 0;
 	top top_inst
 	(
 		.clk_100  (clk_100),
 		.cpu_rst_n(rst_n),
-		.btnu     (btnu)
+		.btnu     (btnu),
+		.btnd     (btnd),
+		.sw       (0)
 	);
 	
 	eth_sim eth_sim_inst
@@ -48,6 +51,11 @@ module test_bench();
 			@(posedge top.clk_mac);
 		
 		eth_sim_inst.rx_sim_inst.send({112'hebeb000000ffffff}, 14);
+		
+		btnd = 1;
+		
+		for(i = 0; i < 10000; i = i + 1)
+			@(posedge top.clk_mac);
 		
 		btnu = 1;
 		

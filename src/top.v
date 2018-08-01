@@ -16,11 +16,12 @@ module top
 	output            eth_clkin,
 	inout             eth_intn,
 	input      [15:0] sw,
-	output     [15:0] led,
+	output reg [15:0] led,
 	input             btnc,
 	input             btnu,
 	input             btnd
 );
+	integer i;
 	
 	wire clk_mac;
 	wire clk_phy;
@@ -76,11 +77,17 @@ module top
 		.out(btnd_d)
 	);
 	
+	(* mark_debug = "true" *)
 	wire        rx_vld;
+	(* mark_debug = "true" *)
 	wire [7:0]  rx_dat;
+	(* mark_debug = "true" *)
 	wire        rx_sof;
+	(* mark_debug = "true" *)
 	wire        rx_eof;
+	(* mark_debug = "true" *)
 	wire [10:0] rx_len;
+	(* mark_debug = "true" *)
 	wire        rx_err;
 	reg         tx_vld;
 	reg  [7:0]  tx_dat;
@@ -88,7 +95,13 @@ module top
 	reg         tx_eof;
 	reg         tx_err = 0;
 	wire        tx_ack;
-	eth_mac mac_inst
+	reg         reg_vld;
+	reg  [4:0]  reg_addr;
+	reg         reg_write;
+	reg  [15:0] reg_wval;
+	wire [15:0] reg_rval;
+	wire        reg_ack;
+	eth_mac#(3'b000) mac_inst
 	(
 		.clk_mac  (clk_mac),
 		.clk_phy  (clk_phy),
@@ -117,76 +130,35 @@ module top
 		.tx_sof   (tx_sof),
 		.tx_eof   (tx_eof),
 		.tx_err   (tx_err),
-		.tx_ack   (tx_ack)
+		.tx_ack   (tx_ack),
+		
+		.reg_vld  (reg_vld),
+		.reg_addr (reg_addr),
+		.reg_write(reg_write),
+		.reg_wval (reg_wval),
+		.reg_rval (reg_rval),
+		.reg_ack  (reg_ack)
 	);
 	
 	reg [7:0] tx_pkt [63:0];
 	reg [7:0] tx_idx = 65;
 	initial begin
-		tx_pkt[0] = 8'hff;
-		tx_pkt[1] = 8'hff;
-		tx_pkt[2] = 8'hff;
-		tx_pkt[3] = 8'hff;
-		tx_pkt[4] = 8'hff;
-		tx_pkt[5] = 8'hff;
-		tx_pkt[6] = 8'h0;
-		tx_pkt[7] = 8'h0;
-		tx_pkt[8] = 8'h0;
-		tx_pkt[9] = 8'h0;
+		tx_pkt[0]  = 8'hff;
+		tx_pkt[1]  = 8'hff;
+		tx_pkt[2]  = 8'hff;
+		tx_pkt[3]  = 8'hff;
+		tx_pkt[4]  = 8'hff;
+		tx_pkt[5]  = 8'hff;
+		tx_pkt[6]  = 8'h0;
+		tx_pkt[7]  = 8'h0;
+		tx_pkt[8]  = 8'h0;
+		tx_pkt[9]  = 8'h0;
 		tx_pkt[10] = 8'h0;
 		tx_pkt[11] = 8'h0;
 		tx_pkt[12] = 8'heb;
 		tx_pkt[13] = 8'heb;
-		tx_pkt[14] = 8'h0;
-		tx_pkt[15] = 8'h0;
-		tx_pkt[16] = 8'h0;
-		tx_pkt[17] = 8'h0;
-		tx_pkt[18] = 8'hde;
-		tx_pkt[19] = 8'had;
-		tx_pkt[20] = 8'hbe;
-		tx_pkt[21] = 8'hef;
-		tx_pkt[22] = 8'h0;
-		tx_pkt[23] = 8'h0;
-		tx_pkt[24] = 8'h0;
-		tx_pkt[25] = 8'h0;
-		tx_pkt[26] = 8'h0;
-		tx_pkt[27] = 8'h0;
-		tx_pkt[28] = 8'h0;
-		tx_pkt[29] = 8'h0;
-		tx_pkt[30] = 8'h0;
-		tx_pkt[31] = 8'h0;
-		tx_pkt[32] = 8'h0;
-		tx_pkt[33] = 8'h0;
-		tx_pkt[34] = 8'h0;
-		tx_pkt[35] = 8'h0;
-		tx_pkt[36] = 8'h0;
-		tx_pkt[37] = 8'h0;
-		tx_pkt[38] = 8'h0;
-		tx_pkt[39] = 8'h0;
-		tx_pkt[40] = 8'h0;
-		tx_pkt[41] = 8'h0;
-		tx_pkt[42] = 8'h0;
-		tx_pkt[43] = 8'h0;
-		tx_pkt[44] = 8'h0;
-		tx_pkt[45] = 8'h0;
-		tx_pkt[46] = 8'h0;
-		tx_pkt[47] = 8'h0;
-		tx_pkt[48] = 8'h0;
-		tx_pkt[49] = 8'h0;
-		tx_pkt[50] = 8'h0;
-		tx_pkt[51] = 8'h0;
-		tx_pkt[52] = 8'h0;
-		tx_pkt[53] = 8'h0;
-		tx_pkt[54] = 8'h0;
-		tx_pkt[55] = 8'h0;
-		tx_pkt[56] = 8'h0;
-		tx_pkt[57] = 8'h1;
-		tx_pkt[58] = 8'h2;
-		tx_pkt[59] = 8'h3;
-		tx_pkt[60] = 8'h4;
-		tx_pkt[61] = 8'h5;
-		tx_pkt[62] = 8'h6;
-		tx_pkt[63] = 8'h7;
+		for(i = 14; i < 64; i = i + 1)
+			tx_pkt[i] = i;
 	end
 	
 	always @(posedge clk_mac) begin
@@ -203,5 +175,68 @@ module top
 			tx_vld <= 0;
 	end
 	
+	localparam STATE_RST         = 0;
+	localparam STATE_IDLE        = 1;
+	localparam STATE_CHECK_REG   = 2;
+	localparam STATE_SET_ADV_REG = 3;
+	localparam STATE_SET_CTRL    = 4;
+	localparam STATE_SOFT_RST    = 5;
+	
+	reg [2:0]  state, next_state;
+	reg [15:0]        next_led;
+	reg [20:0] count = 0;
+	always @(posedge clk_mac) begin
+		state <= rst_n ? next_state : STATE_RST;
+		led   <= next_led;
+		count <= count + 1;
+	end
+	
+	always @* begin
+		next_state = state;
+		next_led   = led;
+		reg_vld    = 0;
+		reg_write  = 0;
+		reg_addr   = 0;
+		reg_wval   = 0;
+		
+		case(state)
+			STATE_RST: begin
+				next_state = STATE_IDLE;
+			end STATE_IDLE: begin
+				if(btnd_d)
+					next_state = STATE_SET_ADV_REG;
+				else if(&count)
+					next_state = STATE_CHECK_REG;
+			end STATE_CHECK_REG: begin
+				reg_vld  = 1;
+				reg_addr = sw;
+				if(reg_ack) begin
+					next_state = STATE_IDLE;
+					next_led   = reg_rval;
+				end
+			end STATE_SET_ADV_REG: begin
+				reg_vld   = 1;
+				reg_write = 1;
+				reg_addr  = 4;
+				reg_wval  = 16'b0000_0000_0000_0001;
+				if(reg_ack)
+					next_state = STATE_SET_CTRL;
+			end STATE_SET_CTRL: begin
+				reg_vld   = 1;
+				reg_write = 1;
+				reg_addr  = 0;
+				reg_wval  = 16'b0000_0000_0000_0000;
+				if(reg_ack)
+					next_state = STATE_IDLE;
+			end STATE_SOFT_RST: begin
+				reg_vld   = 1;
+				reg_write = 1;
+				reg_addr  = 0;
+				reg_wval  = 16'b1000_0000_0000_0000;
+				if(reg_ack)
+					next_state = STATE_IDLE;
+			end
+		endcase
+	end
 	
 endmodule

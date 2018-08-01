@@ -38,11 +38,11 @@ module eth_smi
 	reg [64:0] send_buffer,   next_send_buffer;
 	reg [15:0] recv_buffer,   next_recv_buffer;
 	always @(posedge clk_mac) begin
-		is_write     <= next_is_write;
+		is_write      <= next_is_write;
 		write_counter <= next_write_counter;
-		read_count   <= next_read_count;
-		send_buffer  <= rst_n ? next_send_buffer : 0;
-		recv_buffer  <= next_recv_buffer;
+		read_count    <= next_read_count;
+		send_buffer   <= rst_n ? next_send_buffer : 0;
+		recv_buffer   <= next_recv_buffer;
 	end
 	
 	localparam STATE_IDLE = 0;
@@ -53,15 +53,23 @@ module eth_smi
 	reg mdio_in_mode;
 	always @(posedge clk_mac) begin
 		if(rst_n) begin
-			state         <= next_state;
-			mdio_in_mode  <= next_state == STATE_READ;
+			state        <= next_state;
+			mdio_in_mode <= next_state == STATE_READ;
 		end else begin
 			state        <= STATE_IDLE;
 			mdio_in_mode <= 0;
 		end
 	end
 	
-	assign eth_mdio   = mdio_in_mode ? 1'bz : send_buffer[64];
+	wire eth_mdio_in;
+	IOBUF mdio_buf 
+	(
+		.O (eth_mdio_in),
+		.IO(eth_mdio),
+		.I (send_buffer[64]),
+		.T (mdio_in_mode)
+	);
+	
 	assign ready      = state == STATE_IDLE;
 	assign read_value = recv_buffer;
 	
@@ -94,7 +102,7 @@ module eth_smi
 			end STATE_READ: begin
 				if(toggle) begin
 					next_read_count  = read_count + 1;
-					next_recv_buffer = {recv_buffer[14:0], eth_mdio};
+					next_recv_buffer = {recv_buffer[14:0], eth_mdio_in};
 					if(next_read_count == 17)
 						next_state = STATE_IDLE;
 				end
