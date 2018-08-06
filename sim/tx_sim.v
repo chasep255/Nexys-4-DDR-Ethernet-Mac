@@ -66,9 +66,9 @@ module tx_sim
 					end
 					data[i * 8 +: 8] = byte_buf;
 					b = 0;
-					i = i + 1;
 					if(verbose)
 						$display("TX DATA[%d] = %h", i, byte_buf);
+					i = i + 1;
 				end
 				
 				@(posedge eth_clkin); #0.001;
