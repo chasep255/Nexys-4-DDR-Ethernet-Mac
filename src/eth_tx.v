@@ -12,7 +12,6 @@ module eth_tx
 	input [7:0]      tx_dat,
 	input            tx_sof,
 	input            tx_eof,
-	input            tx_err,
 	output reg       tx_ack
 );
 
@@ -112,7 +111,7 @@ module eth_tx
 							next_byte  = crc32_code[31:24];
 							next_vld   = 1;
 						end
-					end else if(tx_vld && !tx_err) begin
+					end else if(tx_vld) begin
 						next_byte = tx_dat;
 						next_vld  = 1;
 						push_crc  = 1;

@@ -32,7 +32,6 @@ module eth_mac#
 	input [7:0]   tx_dat,
 	input         tx_sof,
 	input         tx_eof,
-	input         tx_err,
 	output        tx_ack,
 	
 	input         reg_vld,
@@ -153,7 +152,6 @@ module eth_mac#
 		.tx_dat  (tx_dat),
 		.tx_sof  (tx_sof),
 		.tx_eof  (tx_eof),
-		.tx_err  (tx_err),
 		.tx_ack  (tx_ack)
 	);
 

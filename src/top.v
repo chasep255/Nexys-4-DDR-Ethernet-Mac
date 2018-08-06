@@ -89,13 +89,14 @@ module top
 	wire [10:0] rx_len;
 	(* mark_debug = "true" *)
 	wire        rx_err;
-	reg         tx_vld;
-	reg  [7:0]  tx_dat;
-	reg         tx_sof;
-	reg         tx_eof;
-	reg         tx_err = 0;
+	
+	wire        tx_vld;
+	wire  [7:0] tx_dat;
+	wire        tx_sof;
+	wire        tx_eof;
 	wire        tx_ack;
-	reg         reg_vld;
+	
+	reg         reg_vld = 0;
 	reg  [4:0]  reg_addr;
 	reg         reg_write;
 	reg  [15:0] reg_wval;
@@ -129,7 +130,6 @@ module top
 		.tx_dat   (tx_dat),
 		.tx_sof   (tx_sof),
 		.tx_eof   (tx_eof),
-		.tx_err   (tx_err),
 		.tx_ack   (tx_ack),
 		
 		.reg_vld  (reg_vld),
@@ -138,6 +138,27 @@ module top
 		.reg_wval (reg_wval),
 		.reg_rval (reg_rval),
 		.reg_ack  (reg_ack)
+	);
+	
+	reg  [7:0] tx_axis_mac_tdata;
+	reg  tx_axis_mac_tvalid;
+	reg  tx_axis_mac_tlast;
+	wire tx_axis_mac_tready;
+	tx_axis_adapter tx_axis_inst
+	(
+		.clk_mac           (clk_mac),
+		.rst_n             (rst_n),
+		
+		.tx_vld            (tx_vld),
+		.tx_dat            (tx_dat),
+		.tx_sof            (tx_sof),
+		.tx_eof            (tx_eof),
+		.tx_ack            (tx_ack),
+		
+		.tx_axis_mac_tdata (tx_axis_mac_tdata),
+		.tx_axis_mac_tvalid(tx_axis_mac_tvalid),
+		.tx_axis_mac_tlast (tx_axis_mac_tlast),
+		.tx_axis_mac_tready(tx_axis_mac_tready)
 	);
 	
 	reg [7:0] tx_pkt [63:0];
@@ -162,17 +183,18 @@ module top
 	end
 	
 	always @(posedge clk_mac) begin
-		if(btnu_d)
-			tx_idx <= 0;
-		
-		if(tx_idx < 65) begin
-			tx_vld <= 1;
-			tx_dat <= tx_pkt[tx_idx];
-			tx_sof <= tx_idx == 0;
-			tx_eof <= tx_idx == 64;
-			tx_idx <= tx_idx + tx_ack;
+		if(btnu_d) begin
+			tx_idx             <= 0;
+			tx_axis_mac_tdata  <= tx_pkt[0];
+			tx_axis_mac_tvalid <= 1;
+			tx_axis_mac_tlast  <= 0;
+		end else if(tx_idx < 64) begin
+			tx_axis_mac_tvalid <= 1;
+			tx_axis_mac_tdata  <= tx_pkt[tx_idx + tx_axis_mac_tready];
+			tx_axis_mac_tlast  <= (tx_idx + tx_axis_mac_tready) == 63;
+			tx_idx             <= tx_idx + tx_axis_mac_tready;
 		end else
-			tx_vld <= 0;
+			tx_axis_mac_tvalid <= 0;
 	end
 	
 	localparam STATE_RST         = 0;
