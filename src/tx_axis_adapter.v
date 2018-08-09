@@ -16,10 +16,10 @@ module tx_axis_adapter
 	input            tx_axis_mac_tlast,
 	output           tx_axis_mac_tready
 );
-	reg              buffer_used;
-	reg              buffer_vld;
-	reg        [7:0] buffer_data;
-	reg              buffer_last;
+	reg       buffer_used;
+	reg       buffer_vld;
+	reg [7:0] buffer_data;
+	reg       buffer_last;
 	
 	assign tx_axis_mac_tready = buffer_used || !buffer_vld;
 	always @(posedge clk_mac) begin

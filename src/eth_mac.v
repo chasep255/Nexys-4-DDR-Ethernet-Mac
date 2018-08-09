@@ -1,14 +1,12 @@
 `timescale 1 ns / 1 ps
 
 (* keep_hierarchy = "yes" *)
-module eth_mac#
-(
-	parameter MODE_STRAPS = 3'b111
-)
+module eth_mac
 (
 	input         clk_mac,
 	input         clk_phy,
 	input         rst_n,
+	input [2:0]   mode_straps,
 	
 	output        eth_mdc,
 	inout         eth_mdio,
@@ -25,7 +23,6 @@ module eth_mac#
 	output [7:0]  rx_dat,
 	output        rx_sof,
 	output        rx_eof,
-	output [10:0] rx_len,
 	output        rx_err,
 	
 	input         tx_vld,
@@ -63,7 +60,7 @@ module eth_mac#
 	(
 		.O (eth_rxd_in[0]),
 		.IO(eth_rxd[0]),
-		.I (MODE_STRAPS[0]),
+		.I (mode_straps[0]),
 		.T (rstn_d)
 	);
 	
@@ -71,7 +68,7 @@ module eth_mac#
 	(
 		.O (eth_rxd_in[1]),
 		.IO(eth_rxd[1]),
-		.I (MODE_STRAPS[1]),
+		.I (mode_straps[1]),
 		.T (rstn_d)
 	);
 	
@@ -79,7 +76,7 @@ module eth_mac#
 	(
 		.O (eth_crsdv_in),
 		.IO(eth_crsdv),
-		.I (MODE_STRAPS[2]),
+		.I (mode_straps[2]),
 		.T (rstn_d)
 	);
 	
@@ -103,7 +100,7 @@ module eth_mac#
 	eth_config eth_config_inst
 	(
 		.clk_mac      (clk_mac),
-		.rst_n        (rst_n),
+		.rst_n        (rstn_d),
 		
 		.eth_intn     (eth_intn),
 		.eth_mdc      (eth_mdc),
@@ -126,7 +123,7 @@ module eth_mac#
 	eth_rx eth_rx_inst
 	(
 		.clk_mac  (clk_mac),
-		.rst_n    (rst_n),
+		.rst_n    (rstn_d),
 		
 		.eth_crsdv(eth_crsdv_in),
 		.eth_rxerr(eth_rxerr_in),
@@ -136,14 +133,13 @@ module eth_mac#
 		.rx_dat   (rx_dat),
 		.rx_sof   (rx_sof),
 		.rx_eof   (rx_eof),
-		.rx_err   (rx_err),
-		.rx_len   (rx_len)
+		.rx_err   (rx_err)
 	);
 	
 	eth_tx eth_tx_inst
 	(
 		.clk_mac (clk_mac),
-		.rst_n   (rst_n),
+		.rst_n   (rstn_d),
 	
 		.eth_txd (eth_txd),	
 		.eth_txen(eth_txen),

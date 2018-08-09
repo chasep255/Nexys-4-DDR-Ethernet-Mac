@@ -13,7 +13,6 @@ module eth_rx
 	output reg [7:0]  rx_dat,
 	output reg        rx_sof,
 	output reg        rx_eof,
-	output reg [10:0] rx_len,
 	output reg        rx_err
 );
 	
@@ -45,18 +44,16 @@ module eth_rx
 		frame_idx <= next_frame_idx;
 	end
 	
-	reg        next_rx_vld;
-	reg        next_rx_sof;
-	reg        next_rx_eof;
-	reg [10:0] next_rx_len;
-	reg [7:0]  next_rx_dat;
-	reg        next_rx_err;
+	reg       next_rx_vld;
+	reg       next_rx_sof;
+	reg       next_rx_eof;
+	reg [7:0] next_rx_dat;
+	reg       next_rx_err;
 	always @(posedge clk_mac) begin
 		rx_vld <= next_rx_vld;
 		rx_dat <= next_rx_dat;
 		rx_sof <= next_rx_sof;
 		rx_eof <= next_rx_eof;
-		rx_len <= next_rx_len;
 		rx_err <= next_rx_err;
 	end
 		
@@ -90,11 +87,10 @@ module eth_rx
 		next_rx_eof    = 0;
 		next_rx_sof    = 0;
 		next_rx_err    = 0; 
-		next_rx_len    = rx_len;
 		next_rx_dat    = rx_dat;
 		next_frame_idx = frame_idx;
 		
-		next_dibit_cnt   = dibit_cnt + 1;
+		next_dibit_cnt = dibit_cnt + 1;
 		
 		if(eth_crsdv_b && !eth_rxerr_b)
 			next_data_buffer = {eth_rxd_b, data_buffer[63:2]};
@@ -117,7 +113,6 @@ module eth_rx
 					if(&next_dibit_cnt) begin
 						next_frame_idx = frame_idx + 1;
 						if(frame_idx >= 4) begin
-							next_rx_len = frame_idx - 3;
 							next_rx_vld = 1;
 							next_rx_dat = next_data_buffer[31:24];
 							next_rx_sof = state == STATE_SOF;

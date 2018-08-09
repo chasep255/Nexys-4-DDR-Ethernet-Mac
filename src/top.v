@@ -78,35 +78,33 @@ module top
 	);
 	
 	(* mark_debug = "true" *)
-	wire        rx_vld;
+	wire [7:0]  rx_axis_mac_tdata;
 	(* mark_debug = "true" *)
-	wire [7:0]  rx_dat;
+	wire        rx_axis_mac_tvalid;
 	(* mark_debug = "true" *)
-	wire        rx_sof;
+	wire        rx_axis_mac_tlast;
 	(* mark_debug = "true" *)
-	wire        rx_eof;
+	wire        rx_axis_mac_tuser;
 	(* mark_debug = "true" *)
-	wire [10:0] rx_len;
+	reg [7:0]   tx_axis_mac_tdata;
 	(* mark_debug = "true" *)
-	wire        rx_err;
-	
-	wire        tx_vld;
-	wire  [7:0] tx_dat;
-	wire        tx_sof;
-	wire        tx_eof;
-	wire        tx_ack;
-	
+	reg         tx_axis_mac_tvalid;
+	(* mark_debug = "true" *)
+	reg         tx_axis_mac_tlast;
+	(* mark_debug = "true" *)
+	wire        tx_axis_mac_tready;
 	reg         reg_vld = 0;
 	reg  [4:0]  reg_addr;
 	reg         reg_write;
 	reg  [15:0] reg_wval;
 	wire [15:0] reg_rval;
 	wire        reg_ack;
-	eth_mac#(3'b000) mac_inst
+	eth_mac_axis mac_inst
 	(
-		.clk_mac  (clk_mac),
-		.clk_phy  (clk_phy),
-		.rst_n    (rst_n),
+		.clk_mac    (clk_mac),
+		.clk_phy    (clk_phy),
+		.rst_n      (rst_n),
+		.mode_straps(3'b111),
 	
 		.eth_mdc  (eth_mdc),
 		.eth_mdio (eth_mdio),
@@ -119,18 +117,14 @@ module top
 		.eth_clkin(eth_clkin),
 		.eth_intn (eth_intn),
 		
-		.rx_vld   (rx_vld),
-		.rx_dat   (rx_dat),
-		.rx_sof   (rx_sof),
-		.rx_eof   (rx_eof),
-		.rx_len   (rx_len),
-		.rx_err   (rx_err),
-	
-		.tx_vld   (tx_vld),
-		.tx_dat   (tx_dat),
-		.tx_sof   (tx_sof),
-		.tx_eof   (tx_eof),
-		.tx_ack   (tx_ack),
+		.rx_axis_mac_tdata (rx_axis_mac_tdata),
+		.rx_axis_mac_tvalid(rx_axis_mac_tvalid),
+		.rx_axis_mac_tlast (rx_axis_mac_tlast),
+		.rx_axis_mac_tuser (rx_axis_mac_tuser),
+		.tx_axis_mac_tdata (tx_axis_mac_tdata),
+		.tx_axis_mac_tvalid(tx_axis_mac_tvalid),
+		.tx_axis_mac_tlast (tx_axis_mac_tlast),
+		.tx_axis_mac_tready(tx_axis_mac_tready),
 		
 		.reg_vld  (reg_vld),
 		.reg_addr (reg_addr),
@@ -138,27 +132,6 @@ module top
 		.reg_wval (reg_wval),
 		.reg_rval (reg_rval),
 		.reg_ack  (reg_ack)
-	);
-	
-	reg  [7:0] tx_axis_mac_tdata;
-	reg  tx_axis_mac_tvalid;
-	reg  tx_axis_mac_tlast;
-	wire tx_axis_mac_tready;
-	tx_axis_adapter tx_axis_inst
-	(
-		.clk_mac           (clk_mac),
-		.rst_n             (rst_n),
-		
-		.tx_vld            (tx_vld),
-		.tx_dat            (tx_dat),
-		.tx_sof            (tx_sof),
-		.tx_eof            (tx_eof),
-		.tx_ack            (tx_ack),
-		
-		.tx_axis_mac_tdata (tx_axis_mac_tdata),
-		.tx_axis_mac_tvalid(tx_axis_mac_tvalid),
-		.tx_axis_mac_tlast (tx_axis_mac_tlast),
-		.tx_axis_mac_tready(tx_axis_mac_tready)
 	);
 	
 	reg [7:0] tx_pkt [63:0];

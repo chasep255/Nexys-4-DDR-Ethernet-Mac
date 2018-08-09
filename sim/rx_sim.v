@@ -29,6 +29,7 @@ module rx_sim
 	initial begin
 		eth_crsdv = 0;
 		eth_rxd   = 0;
+		eth_rxerr = 0;
 	end
 	
 	reg verbose = 1;
