@@ -10,7 +10,7 @@ module rx_sim
 	
 );
 
-	`include "../src/util.vh"
+	`include "../rtl/util.vh"
 	
 	reg         crc_rst;
 	reg         crc_vld;

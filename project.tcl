@@ -5,16 +5,24 @@ file mkdir $build_dir
 
 create_project -force $project_name $build_dir/$project_name -part xc7a100tcsg324-1
 
-set design_files     [glob src/*]
-set constraint_files [glob const/*]
-set simulation_files [glob sim/*]
+set design_files     [glob -nocomplain rtl/*]
+set constraint_files [glob -nocomplain const/*]
+set simulation_files [glob -nocomplain sim/*]
 
-add_files -fileset sources_1 $design_files
-add_files -fileset constrs_1 $constraint_files
-add_files -fileset sim_1     $simulation_files
+set has_example [expr [llength $argv] >= 1]
 
-set_property top test_bench [get_filesets sim_1]
+if $has_example {
+	set example_name     [lindex $argv 0]
+	set design_files     [concat $design_files     [glob -nocomplain examples/$example_name/rtl/*]]
+	set constraint_files [concat $constraint_files [glob -nocomplain examples/$example_name/const/*]]
+	set simulation_files [concat $simulation_files [glob -nocomplain examples/$example_name/sim/*]]
+}
+
+if [llength $design_files]     {add_files -fileset sources_1 $design_files}
+if [llength $constraint_files] {add_files -fileset constrs_1 $constraint_files}
+if [llength $simulation_files] {add_files -fileset sim_1     $simulation_files}
+
+if $has_example {set_property top test_bench [get_filesets sim_1]}
+
 update_compile_order -fileset sources_1
 update_compile_order -fileset sim_1
-
-start_gui

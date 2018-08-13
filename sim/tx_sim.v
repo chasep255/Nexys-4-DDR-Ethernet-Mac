@@ -8,7 +8,7 @@ module tx_sim
 	input [1:0] eth_txd
 );
 
-	`include "../src/util.vh"
+	`include "../rtl/util.vh"
 	
 	reg         crc_rst;
 	reg         crc_vld;

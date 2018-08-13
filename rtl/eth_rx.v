@@ -61,7 +61,7 @@ module eth_rx
 	localparam STATE_SOF      = 3'b010;
 	localparam STATE_RECV     = 3'b100;
 	
-	//Override FSM because Vivado ignores STATE_RECV with auto
+	//Override FSM because of bug where Vivado ignores STATE_RECV with auto mode
 	(* fsm_encoding = "none" *)
 	reg [2:0] state = STATE_PREAMBLE, next_state;
 	always @(posedge clk_mac) begin
