@@ -9,13 +9,12 @@ set design_files     [glob -nocomplain rtl/*]
 set constraint_files [glob -nocomplain const/*]
 set simulation_files [glob -nocomplain sim/*]
 
-set has_example [expr [llength $argv] >= 1]
+set has_example [expr [llength $argv] >= 1 && [lindex $argv 0]]
 
 if $has_example {
-	set example_name     [lindex $argv 0]
-	set design_files     [concat $design_files     [glob -nocomplain examples/$example_name/rtl/*]]
-	set constraint_files [concat $constraint_files [glob -nocomplain examples/$example_name/const/*]]
-	set simulation_files [concat $simulation_files [glob -nocomplain examples/$example_name/sim/*]]
+	set design_files     [concat $design_files     [glob -nocomplain example/rtl/*]]
+	set constraint_files [concat $constraint_files [glob -nocomplain example/const/*]]
+	set simulation_files [concat $simulation_files [glob -nocomplain example/sim/*]]
 }
 
 if [llength $design_files]     {add_files -fileset sources_1 $design_files}
