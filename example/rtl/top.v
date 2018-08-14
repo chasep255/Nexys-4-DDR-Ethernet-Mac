@@ -99,7 +99,7 @@ module top
 	reg  [15:0] reg_wval;
 	wire [15:0] reg_rval;
 	wire        reg_ack;
-	eth_mac_axis mac_inst
+	eth_mac#(1) mac_inst
 	(
 		.clk_mac    (clk_mac),
 		.clk_phy    (clk_phy),

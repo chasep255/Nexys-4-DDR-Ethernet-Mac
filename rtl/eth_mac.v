@@ -1,7 +1,10 @@
 `timescale 1 ns / 1 ps
 
 (* keep_hierarchy = "yes" *)
-module eth_mac
+module eth_mac#
+(
+	parameter AXIS_INTERFACES = 0
+)
 (
 	input         clk_mac,
 	input         clk_phy,
@@ -25,11 +28,21 @@ module eth_mac
 	output        rx_eof,
 	output        rx_err,
 	
+	output [7:0]  rx_axis_mac_tdata,
+	output        rx_axis_mac_tvalid,
+	output        rx_axis_mac_tlast,
+	output        rx_axis_mac_tuser,
+	
 	input         tx_vld,
 	input [7:0]   tx_dat,
 	input         tx_sof,
 	input         tx_eof,
 	output        tx_ack,
+	
+	input  [7:0]  tx_axis_mac_tdata,
+	input         tx_axis_mac_tvalid,
+	input         tx_axis_mac_tlast,
+	output        tx_axis_mac_tready,
 	
 	input         reg_vld,
 	input  [4:0]  reg_addr,
@@ -120,6 +133,11 @@ module eth_mac
 		.auto_neg_done(auto_neg_done)
 	);
 	
+	wire       rx_vld_w;
+	wire [7:0] rx_dat_w;
+	wire       rx_sof_w;
+	wire       rx_eof_w;
+	wire       rx_err_w;
 	eth_rx eth_rx_inst
 	(
 		.clk_mac  (clk_mac),
@@ -129,13 +147,18 @@ module eth_mac
 		.eth_rxerr(eth_rxerr_in),
 		.eth_rxd  (eth_rxd_in),
 		
-		.rx_vld   (rx_vld),
-		.rx_dat   (rx_dat),
-		.rx_sof   (rx_sof),
-		.rx_eof   (rx_eof),
-		.rx_err   (rx_err)
+		.rx_vld   (rx_vld_w),
+		.rx_dat   (rx_dat_w),
+		.rx_sof   (rx_sof_w),
+		.rx_eof   (rx_eof_w),
+		.rx_err   (rx_err_w)
 	);
 	
+	wire       tx_vld_w;
+	wire [7:0] tx_dat_w;
+	wire       tx_sof_w;
+	wire       tx_eof_w;
+	wire       tx_ack_w;
 	eth_tx eth_tx_inst
 	(
 		.clk_mac (clk_mac),
@@ -144,11 +167,58 @@ module eth_mac
 		.eth_txd (eth_txd),	
 		.eth_txen(eth_txen),
 	
-		.tx_vld  (tx_vld),
-		.tx_dat  (tx_dat),
-		.tx_sof  (tx_sof),
-		.tx_eof  (tx_eof),
-		.tx_ack  (tx_ack)
+		.tx_vld  (tx_vld_w),
+		.tx_dat  (tx_dat_w),
+		.tx_sof  (tx_sof_w),
+		.tx_eof  (tx_eof_w),
+		.tx_ack  (tx_ack_w)
 	);
+	
+	generate if(AXIS_INTERFACES) begin
+		tx_axis_adapter tx_axis_inst
+		(
+			.clk_mac           (clk_mac),
+			.rst_n             (rst_n),
+			
+			.tx_vld            (tx_vld_w),
+			.tx_dat            (tx_dat_w),
+			.tx_sof            (tx_sof_w),
+			.tx_eof            (tx_eof_w),
+			.tx_ack            (tx_ack_w),
+			
+			.tx_axis_mac_tdata (tx_axis_mac_tdata),
+			.tx_axis_mac_tvalid(tx_axis_mac_tvalid),
+			.tx_axis_mac_tlast (tx_axis_mac_tlast),
+			.tx_axis_mac_tready(tx_axis_mac_tready)
+		);
+		
+		rx_axis_adapter rx_axis_inst
+		(
+			.clk_mac           (clk_mac),
+			.rst_n             (rst_n),
+			
+			.rx_vld            (rx_vld_w),
+			.rx_dat            (rx_dat_w),
+			.rx_sof            (rx_sof_w),
+			.rx_eof            (rx_eof_w),
+			.rx_err            (rx_err_w),
+			
+			.rx_axis_mac_tdata (rx_axis_mac_tdata),
+			.rx_axis_mac_tvalid(rx_axis_mac_tvalid),
+			.rx_axis_mac_tlast (rx_axis_mac_tlast),
+			.rx_axis_mac_tuser (rx_axis_mac_tuser)
+		);
+	end else begin
+		assign rx_vld = rx_vld_w;
+		assign rx_dat = rx_dat_w;
+		assign rx_sof = rx_sof_w;
+		assign rx_eof = rx_eof_w;
+		assign rx_err = rx_err_w;
+		assign tx_vld = tx_vld_w;
+		assign tx_dat = tx_dat_w;
+		assign tx_sof = tx_sof_w;
+		assign tx_eof = tx_eof_w;
+		assign tx_ack = tx_ack_w;
+	end endgenerate
 
 endmodule
