@@ -17,8 +17,6 @@ module top
 	inout             eth_intn,
 	input      [15:0] sw,
 	output reg [15:0] led,
-	input             btnc,
-	input             btnu,
 	input             btnd
 );
 	integer i;
@@ -53,28 +51,12 @@ module top
 		rst_n_counter <= rst_n ? 0 : rst_n_counter + 1;
 	end
 	
-	wire btnc_d;
-	debounce#(1) btnc_debounce
-	(
-		.clk(clk_mac),
-		.in (btnc),
-		.out(btnc_d)
-	);
-	
 	wire btnu_d;
 	debounce#(1) btnu_debounce
 	(
 		.clk(clk_mac),
 		.in (btnu),
 		.out(btnu_d)
-	);
-	
-	wire btnd_d;
-	debounce#(1) btnd_debounce
-	(
-		.clk(clk_mac),
-		.in (btnd),
-		.out(btnd_d)
 	);
 	
 	(* mark_debug = "true" *)
@@ -170,12 +152,9 @@ module top
 			tx_axis_mac_tvalid <= 0;
 	end
 	
-	localparam STATE_RST         = 0;
-	localparam STATE_IDLE        = 1;
-	localparam STATE_CHECK_REG   = 2;
-	localparam STATE_SET_ADV_REG = 3;
-	localparam STATE_SET_CTRL    = 4;
-	localparam STATE_SOFT_RST    = 5;
+	localparam STATE_RST       = 0;
+	localparam STATE_IDLE      = 1;
+	localparam STATE_CHECK_REG = 2;
 	
 	reg [2:0]  state, next_state;
 	reg [15:0]        next_led;
@@ -198,9 +177,7 @@ module top
 			STATE_RST: begin
 				next_state = STATE_IDLE;
 			end STATE_IDLE: begin
-				if(btnd_d)
-					next_state = STATE_SET_ADV_REG;
-				else if(&count)
+				if(&count)
 					next_state = STATE_CHECK_REG;
 			end STATE_CHECK_REG: begin
 				reg_vld  = 1;
@@ -209,27 +186,6 @@ module top
 					next_state = STATE_IDLE;
 					next_led   = reg_rval;
 				end
-			end STATE_SET_ADV_REG: begin
-				reg_vld   = 1;
-				reg_write = 1;
-				reg_addr  = 4;
-				reg_wval  = 16'b0000_0000_0000_0001;
-				if(reg_ack)
-					next_state = STATE_SET_CTRL;
-			end STATE_SET_CTRL: begin
-				reg_vld   = 1;
-				reg_write = 1;
-				reg_addr  = 0;
-				reg_wval  = 16'b0000_0000_0000_0000;
-				if(reg_ack)
-					next_state = STATE_IDLE;
-			end STATE_SOFT_RST: begin
-				reg_vld   = 1;
-				reg_write = 1;
-				reg_addr  = 0;
-				reg_wval  = 16'b1000_0000_0000_0000;
-				if(reg_ack)
-					next_state = STATE_IDLE;
 			end
 		endcase
 	end
