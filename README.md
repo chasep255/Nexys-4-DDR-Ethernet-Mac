@@ -1,1 +1,1 @@
-#Ethernet MAC for the Digilent Nexys4-DDR
+# Ethernet MAC for the Digilent Nexys4-DDR
