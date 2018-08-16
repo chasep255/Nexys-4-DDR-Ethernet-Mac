@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Ethernet MAC for the Digilent Nexys 4 DDR
 This project contains an ethernet mac which is compatible with the Digilent Nexys 4 DDR FPGA board.  This MAC uses an RMII interface to transmit/receive data, and SMI to set/read the control registers on the PHY.  It normalizes the RX/TX data into a stream of bytes and performs the CRC check.  It supports a native stream protocol as well as AXI stream for sending and receiving packets.  This project is packaged into an IP core to be included in other projects.  There is also a very simple example which the user can use chipscope to view the RX packets, broadcast TX packets, and check the values of the control registers.
 
@@ -48,8 +47,3 @@ Currently only supports full duplex transmit and receive.  Yet again I could not
 
 ### Fix mode configuration straps
 The mode configuration straps which are supposed to be latched on the positive edge of reset signal to the phy do not seem to have any effect.  I am not sure why.
-
-
-=======
-# Ethernet MAC for the Digilent Nexys4-DDR
->>>>>>> 38edb28cf3a0a00b4ac112315d22d487542b20ed
