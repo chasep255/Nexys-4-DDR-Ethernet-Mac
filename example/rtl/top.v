@@ -17,7 +17,7 @@ module top
 	inout             eth_intn,
 	input      [15:0] sw,
 	output reg [15:0] led,
-	input             btnd
+	input             btnu
 );
 	integer i;
 	
