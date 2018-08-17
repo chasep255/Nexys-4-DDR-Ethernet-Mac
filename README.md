@@ -12,6 +12,9 @@ As is this project can be imported as an ip core. If you want to further develop
 ## Clocking
 This core requires two 50 MHz clocks.  The phy is driven by *clk_phy* over the *eth_clkin* port. This should be at a 45 degree phase to *clk_mac* which drives all logic in the mac.  All user logic should be synchronous to *clk_mac*.  
 
+## Reset
+The phy takes a *rst_n* (active low) signal from the user.  This resets the mac logic as well as the phy. The phy requires that *rst_n* be asserted for at least 100 microseconds.  
+
 ## RX
 On the RX side there is a native mode and an AXI stream mode.
 
