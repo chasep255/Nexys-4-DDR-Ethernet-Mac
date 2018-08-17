@@ -52,12 +52,12 @@ This interface sit on top of the native interface.  It is enabled when the AXIS_
 ## SMI / MDIO
 This core provides the user read/write access to the control/status registers on the phy.  It also periodically checks the values in *register[1]* and uses it to update the *speed_100*, *full_duplex*, *link_up*, *remote_fault*, and *auto_neg_done* outputs.  When it is not checking that register it allows the user to insert their own reads and writes.  Note that this core assumes the phy is at address 1 which is the default on the Nexys 4 DDR board.
 
-**reg_vld** - Indicates that the input signals are valid.
-**reg_addr** - Address of the register.
-**reg_write** - Assert this for a write operation or de-assert it for a read.
-**reg_wval** - 16 bit value being written, ignored on read.
-**reg_rval** - 16 bit value read from the register, valid on *reg_ack*, ignored on write.
-**reg_ack** - Signals that the register operation is complete.  All input signals should be held constant until reg_ack is asserted.
+* **reg_vld** - Indicates that the input signals are valid.
+* **reg_addr** - Address of the register.
+* **reg_write** - Assert this for a write operation or de-assert it for a read.
+* **reg_wval** - 16 bit value being written, ignored on read.
+* **reg_rval** - 16 bit value read from the register, valid on *reg_ack*, ignored on write.
+* **reg_ack** - Signals that the register operation is complete.  All input signals should be held constant until reg_ack is asserted.
 
 ## Example
 Right now the example project is very simple. This is what I used for testing the core, and demonstrates some of its basic functionality.  As of right now it allows you to see incoming packets using chipscope, broadcast a packet by pressing the up button on your board, and reads the value on the control register chosen using the switches and display it on the leds.  
